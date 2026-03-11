@@ -1,0 +1,32 @@
+services:
+  # Backend API
+  - type: web
+    name: ab-test-predictor-api
+    runtime: python
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DB_PATH
+        value: /data/ab_test_predictor.db
+      - key: PYTHON_VERSION
+        value: "3.11"
+    disk:
+      name: sqlite-data
+      mountPath: /data
+      sizeGB: 1
+
+  # Frontend static site
+  - type: web
+    name: ab-test-predictor-frontend
+    runtime: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /api/*
+        destination: https://ab-test-predictor-api.onrender.com/api/*
+      - type: rewrite
+        source: /*
+        destination: /index.html
