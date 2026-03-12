@@ -1,4 +1,4 @@
-"""Seed the SQLite database from the CSV file.
+"""Seed the database from the CSV file.
 
 Run once: python seed.py
 """

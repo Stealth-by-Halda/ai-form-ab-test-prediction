@@ -1,3 +1,8 @@
+databases:
+  - name: ab-test-predictor-db
+    plan: free
+    region: oregon
+
 services:
   # Backend API
   - type: web
@@ -7,14 +12,12 @@ services:
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     envVars:
-      - key: DB_PATH
-        value: /data/ab_test_predictor.db
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ab-test-predictor-db
+          property: connectionString
       - key: PYTHON_VERSION
-        value: "3.11"
-    disk:
-      name: sqlite-data
-      mountPath: /data
-      sizeGB: 1
+        value: "3.11.11"
 
   # Frontend static site
   - type: web
