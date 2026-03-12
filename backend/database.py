@@ -10,7 +10,7 @@ DATABASE_URL = os.environ.get(
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
-engine = create_engine(DATABASE_URL)
+engine = create_engine(DATABASE_URL, pool_pre_ping=True, connect_args={"connect_timeout": 30})
 SessionLocal = sessionmaker(bind=engine, autoflush=False, autocommit=False)
 
 
