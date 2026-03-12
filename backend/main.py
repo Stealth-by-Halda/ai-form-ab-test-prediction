@@ -49,12 +49,15 @@ def _migrate(engine):
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    try:
-        Base.metadata.create_all(engine)
-        _migrate(engine)
-    except Exception as e:
-        import logging
-        logging.getLogger("uvicorn.error").warning(f"DB init deferred: {e}")
+    import os
+    if not os.environ.get("RENDER"):
+        # Only run migrations locally; prod DB is already set up
+        try:
+            Base.metadata.create_all(engine)
+            _migrate(engine)
+        except Exception as e:
+            import logging
+            logging.getLogger("uvicorn.error").warning(f"DB init deferred: {e}")
     yield
 
 
